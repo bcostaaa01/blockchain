@@ -1,0 +1,5 @@
+# set ignores for oop folder, blockchain.p, blockchain.txt
+pycache/*
+oop/*
+blockchain.p
+blockchain.txt
