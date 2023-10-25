@@ -134,6 +134,8 @@ class Blockchain:
             :recipient: The recipient of the coins
             :transaction_amount: The amount that should be added
         """
+        if self.hosting_node == None:
+            return False
         transaction = Transaction(sender, recipient, amount)
         if Verification.verify_transaction(transaction, self.get_balance):   
             self.__open_transactions.append(transaction)
@@ -146,6 +148,8 @@ class Blockchain:
     # Mine a new block
     def mine_block(self, hosting_node):
         """ Mine a new block """
+        if self.hosting_node == None:
+            return False
         last_block = self.__chain[-1]
         # Fetch the currently last block of the blockchain
         hashed_block = hash_block(last_block)
