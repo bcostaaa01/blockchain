@@ -79,3 +79,25 @@ class Wallet:
         )
         return binascii.hexlify(signature).decode('utf-8')
 
+    @staticmethod
+    def verify_transaction(transaction):
+        if transaction.sender == 'MINING':
+            return True
+        public_key = serialization.load_pem_public_key(
+            transaction.sender.encode('utf-8')
+        )
+        try:
+            public_key.verify(
+                binascii.unhexlify(transaction.signature),
+                str(transaction.to_ordered_dict()).encode('utf-8'),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH
+                ),
+                hashes.SHA256()
+            )
+            return True
+        except Exception:
+            return False
+
+

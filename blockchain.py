@@ -8,6 +8,7 @@ from utility.hash_util import hash_block
 from utility.verification import Verification
 from block import Block
 from transaction import Transaction
+from wallet import Wallet
 
 
 # Initialize the reward for mining a new block
@@ -138,6 +139,8 @@ class Blockchain:
         if self.hosting_node == None:
             return False
         transaction = Transaction(sender, recipient, signature, amount)
+        if not Wallet.verify_transaction(transaction):
+            return False
         if Verification.verify_transaction(transaction, self.get_balance):   
             self.__open_transactions.append(transaction)
             self.save_data()
@@ -145,20 +148,25 @@ class Blockchain:
         else:
             return False
     
-    
+
     # Mine a new block
-    def mine_block(self, hosting_node):
+    def mine_block(self):
         """ Mine a new block """
-        if self.hosting_node == None:
+        if self.hosting_node is None:
             return False
         last_block = self.__chain[-1]
         # Fetch the currently last block of the blockchain
         hashed_block = hash_block(last_block)
-        proof = self.proof_of_work()  
-        reward_transaction = Transaction('MINING', hosting_node, '', MINING_REWARD)
+        proof = self.proof_of_work()
+        reward_transaction = Transaction('MINING', self.hosting_node, '', MINING_REWARD)
         copied_transactions = self.__open_transactions[:]
         copied_transactions.append(reward_transaction)
         block = Block(len(self.__chain), hashed_block, copied_transactions, proof)
+        print(block.transactions)
+        for tx in block.transactions:
+            print(tx)
+            if not Wallet.verify_transaction(tx):  # Assuming you have a 'wallet' instance
+                return False
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
