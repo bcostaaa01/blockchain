@@ -1,8 +1,11 @@
+import binascii
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
 
 class Wallet:
-    def __init__(self):
+    def __init(self):
         self.private_key = None
         self.public_key = None
 
@@ -17,7 +20,7 @@ class Wallet:
                 f.write(private_key)
         except (IOError, IndexError):
             print("Saving wallet failed!")
-            
+
     def load_keys(self):
         try:
             with open('wallet.txt', mode='r') as f:
@@ -28,9 +31,9 @@ class Wallet:
                 self.private_key = private_key
         except (IOError, IndexError):
             print("Loading wallet failed!")
-            
+
     def save_keys(self):
-        if self.public_key != None and self.private_key != None:
+        if self.public_key is not None and self.private_key is not None:
             try:
                 with open('wallet.txt', mode='w') as f:
                     f.write(self.public_key)
@@ -47,7 +50,7 @@ class Wallet:
 
         private_pem = private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption()
         )
 
@@ -59,3 +62,20 @@ class Wallet:
         )
 
         return (private_pem.decode('utf-8'), public_pem.decode('utf-8'))
+
+    def sign_transaction(self, sender, recipient, amount):
+        private_key = serialization.load_pem_private_key(
+            self.private_key.encode('utf-8'),
+            password=None
+        )
+        message = f"{sender}{recipient}{amount}".encode('utf-8')
+        signature = private_key.sign(
+            message,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        )
+        return binascii.hexlify(signature).decode('utf-8')
+

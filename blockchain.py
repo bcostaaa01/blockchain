@@ -126,12 +126,13 @@ class Blockchain:
     
 
     # Add a new value as well as the last blockchain value to the blockchain
-    def add_transaction(self, recipient, sender, amount=1.0):
+    def add_transaction(self, recipient, sender, signature, amount=1.0):
         """ Append a new value as well as the last blockchain value to the blockchain
         
         Arguments
-            :sender: The sender of the coins
             :recipient: The recipient of the coins
+            :sender: The sender of the coins
+            :signature: The signature of the transaction
             :transaction_amount: The amount that should be added
         """
         if self.hosting_node == None:
