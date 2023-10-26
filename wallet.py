@@ -81,8 +81,6 @@ class Wallet:
 
     @staticmethod
     def verify_transaction(transaction):
-        if transaction.sender == 'MINING':
-            return True
         public_key = serialization.load_pem_public_key(
             transaction.sender.encode('utf-8')
         )

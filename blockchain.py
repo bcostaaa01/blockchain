@@ -139,8 +139,6 @@ class Blockchain:
         if self.hosting_node == None:
             return False
         transaction = Transaction(sender, recipient, signature, amount)
-        if not Wallet.verify_transaction(transaction):
-            return False
         if Verification.verify_transaction(transaction, self.get_balance):   
             self.__open_transactions.append(transaction)
             self.save_data()
@@ -160,13 +158,11 @@ class Blockchain:
         proof = self.proof_of_work()
         reward_transaction = Transaction('MINING', self.hosting_node, '', MINING_REWARD)
         copied_transactions = self.__open_transactions[:]
-        copied_transactions.append(reward_transaction)
-        block = Block(len(self.__chain), hashed_block, copied_transactions, proof)
-        print(block.transactions)
-        for tx in block.transactions:
-            print(tx)
+        for tx in copied_transactions:
             if not Wallet.verify_transaction(tx):  # Assuming you have a 'wallet' instance
                 return False
+        copied_transactions.append(reward_transaction)
+        block = Block(len(self.__chain), hashed_block, copied_transactions, proof)
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
