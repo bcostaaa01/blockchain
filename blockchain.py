@@ -150,8 +150,8 @@ class Blockchain:
     # Mine a new block
     def mine_block(self):
         """ Mine a new block """
-        if self.hosting_node is None:
-            return False
+        if self.hosting_node == None:
+            return None
         last_block = self.__chain[-1]
         # Fetch the currently last block of the blockchain
         hashed_block = hash_block(last_block)
@@ -160,10 +160,10 @@ class Blockchain:
         copied_transactions = self.__open_transactions[:]
         for tx in copied_transactions:
             if not Wallet.verify_transaction(tx):  # Assuming you have a 'wallet' instance
-                return False
+                return None
         copied_transactions.append(reward_transaction)
         block = Block(len(self.__chain), hashed_block, copied_transactions, proof)
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
-        return True
+        return block
