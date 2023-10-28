@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 # Class imports
@@ -12,6 +12,11 @@ CORS(app)
 
 
 # Routes 
+@app.route('/', methods=['GET'])
+def get_ui():
+    return send_from_directory('ui', 'node.html')
+
+
 @app.route('/wallet', methods=['POST'])
 def create_keys():
     wallet.create_keys()
@@ -47,11 +52,6 @@ def load_keys():
             'message': 'Loading the keys failed.',
         }
         return jsonify(response), 500
-
-
-@app.route('/', methods=['GET'])
-def get_ui():
-    return 'This works!'
 
 
 @app.route('/transaction', methods=['POST'])

@@ -15,9 +15,9 @@ class Wallet:
         self.public_key = public_key
         try:
             with open('wallet.txt', mode='w') as f:
-                f.write(public_key)
+                f.write(str(public_key.encode('utf-8')))
                 f.write('\n')
-                f.write(private_key)
+                f.write(str(private_key.encode('utf-8')))
         except (IOError, IndexError):
             print("Saving wallet failed!")
 
@@ -38,9 +38,9 @@ class Wallet:
         if self.public_key is not None and self.private_key is not None:
             try:
                 with open('wallet.txt', mode='w') as f:
-                    f.write(self.public_key)
+                    f.write(str(self.public_key.encode('utf-8')))
                     f.write('\n')
-                    f.write(self.private_key)
+                    f.write(str(self.private_key.encode('utf-8')))
                 return True
             except (IOError, IndexError):
                 print("Saving wallet failed!")
